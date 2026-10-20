@@ -1,0 +1,9 @@
+[
+  {"id": 1, "title": "Public Speaker", "description": "Successfully spoke in front of a crowd at 5 different events.", "rarity": "gold", "icon": "🎤"},
+  {"id": 2, "title": "Mentor", "description": "Onboarded and mentored at least 3 junior teammates.", "rarity": "silver", "icon": "🧭"},
+  {"id": 3, "title": "Firefighter", "description": "Led the resolution of a production incident under pressure.", "rarity": "bronze", "icon": "🔥"},
+  {"id": 4, "title": "Bridge Builder", "description": "Coordinated a project across 3+ teams or departments.", "rarity": "silver", "icon": "🤝"},
+  {"id": 5, "title": "Team Lead", "description": "Led a team to deliver a product from idea to production.", "rarity": "platinum", "icon": "🏆"},
+  {"id": 6, "title": "Author", "description": "Published a technical article or talk read by 1,000+ people.", "rarity": "gold", "progress": 60, "icon": "✍️"},
+  {"id": 7, "title": "Open Source Maintainer", "description": "Maintained a public project used by 100+ developers.", "rarity": "platinum", "icon": "🛠️"}
+]

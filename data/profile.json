@@ -1,0 +1,18 @@
+{
+  "name": "Miguel",
+  "surnames": "García Surname2",
+  "job_title": "Software Engineer",
+  "image": "assets/profile.svg",
+  "phrase": "Lifestyle: Knowledge-Driven",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/your-username" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-profile" },
+    { "label": "Email", "url": "mailto:you@example.com" }
+  ],
+  "sections": {
+    "experience": "Experience",
+    "tech": "Technical Expertise",
+    "skills": "Soft Skills",
+    "contributions": "Open Source Contributions"
+  }
+}
