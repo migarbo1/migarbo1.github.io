@@ -51,6 +51,7 @@
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
 
@@ -150,16 +151,27 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 20px; box-shadow: var(--shadow);
 }
+.xp-scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: 6px; }
+.xp-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.is-scrollable .xp-scroll { cursor: grab; }
+.xp-scroll.dragging { cursor: grabbing; user-select: none; }
+/* Wide enough that the shortest job gets --xp-min-w; never narrower than the card. */
+.xp-canvas { --xp-min-w: 170px; width: max(100%, calc(var(--span-ratio) * var(--xp-min-w))); }
+.xp-hint { display: none; margin: 8px 0 0; font-size: 12px; color: var(--muted); transition: opacity .2s ease; }
+.is-scrollable .xp-hint { display: block; }
+.xp-hint.at-start { opacity: 0; }
 .xp-track {
   position: relative;
-  height: calc(var(--lanes) * var(--xp-h) + (var(--lanes) - 1) * 8px);
+  height: calc(var(--lanes) * var(--xp-h));
   border-left: 2px solid var(--text); border-right: 2px solid var(--text);
 }
 .xp-lanes { position: absolute; inset: 0 2px; }
 .xp-block {
-  position: absolute; height: var(--xp-h);
+  position: absolute;
   left: var(--pos); width: var(--len);
-  top: calc(var(--lane) * (var(--xp-h) + 8px));
+  /* --slots: how many lanes this box shares the track with (1 = full height). */
+  --slot: calc(100% / var(--slots)); /* no extra gap: the 2px borders already separate boxes */
+  top: calc(var(--lane) * var(--slot)); height: var(--slot);
   display: grid;
   grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto 1fr auto;
@@ -177,16 +189,30 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 .xp-icon { grid-area: icon; width: 28px; height: 28px; border-radius: 7px; }
 .xp-company { grid-area: name; margin-top: 4px; }
 .xp-role { grid-area: role; font-size: 14px; opacity: .92; }
-.xp-company, .xp-role { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Long names wrap at word boundaries (a single word longer than the box still breaks). */
+.xp-company, .xp-role { max-width: 100%; line-height: 1.2; overflow-wrap: break-word; }
+.name-short { display: none; }
 .co-icon { width: 20px; height: 20px; flex-shrink: 0; border-radius: 5px; background: #fff; padding: 1px; }
 
 /* Dates sit in the bottom corners. */
 .xp-date {
   font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
-  color: #fff;
+  color: inherit; /* same black/white as the rest of the box, picked for contrast */
 }
 .xp-date-start { grid-area: from; justify-self: start; }
 .xp-date-end { grid-area: to; justify-self: end; }
+
+/* Very short jobs: drop the job title (it stays in the tooltip) and stack the dates. */
+.xp-block { container-type: inline-size; }
+@container (max-width: 100px) {
+  .xp-role { display: none; }
+  .xp-company { font-size: 12px; }
+  .xp-company:has(.name-short) .name-full { display: none; }
+  .xp-company .name-short { display: inline; }
+  .xp-date { font-size: 11px; }
+  .xp-date-start { grid-area: auto; grid-column: 1 / -1; grid-row: 3; align-self: end; justify-self: center; }
+  .xp-date-end { grid-area: auto; grid-column: 1 / -1; grid-row: 4; justify-self: center; }
+}
 
 /* ---------- technical expertise ---------- */
 .tech-chart {
@@ -198,40 +224,137 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 .legend-swatch { display: grid; place-items: center; width: 28px; height: 20px; border-radius: 5px; }
 .legend-swatch .co-icon { width: 14px; height: 14px; border-radius: 3px; }
 
-.tech-grid { display: grid; grid-template-columns: 150px 1fr; row-gap: 8px; }
-.tech-axis .axis { margin-top: 0; }
-.tech-label {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  padding-right: 12px; font-size: 14px; min-width: 0;
+/* One row per career branch: label | company-coloured timeline. */
+.disc-list { display: flex; flex-direction: column; gap: 14px; }
+.disc { display: grid; grid-template-columns: 190px 1fr; column-gap: 16px; align-items: center; border-radius: 10px; }
+.disc-label { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.disc-icon {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 36px; height: 36px; border-radius: 10px; font-size: 18px;
+  background: var(--surface-2); border: 1px solid var(--border);
 }
-.tool-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tool-years { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.disc-name { display: block; font-weight: 700; line-height: 1.2; }
+.disc-years { display: block; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.disc-axis { margin-top: -4px; }
+.tech-axis .axis { margin-top: 0; }
+/* Branch rows linked to a radar: hover highlights it, click scrolls to it. */
+.disc-linked { cursor: pointer; }
+.disc-linked:hover .disc-name, .disc-linked:focus-visible .disc-name { color: var(--accent); }
+.disc-linked:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+/* Hovering a radar item dims the companies that didn't use it. */
+.tech-bar { transition: opacity .15s ease; }
+.tech-chart.focus .tech-bar:not(.hl) { opacity: .2; }
+
+/* ---------- expertise radars ---------- */
+.radar-section { margin-top: 20px; }
+.radar-scroll {
+  display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 10px;
+  scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin;
+}
+.radar-section.is-scrollable .radar-scroll { cursor: grab; }
+.radar-scroll.dragging { cursor: grabbing; user-select: none; scroll-snap-type: none; }
+.radar-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.radar-card {
+  flex: 0 0 380px; scroll-snap-align: start;
+  display: flex; flex-direction: column;
+  padding: 16px 12px 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.radar-card.linked, .list-card.linked { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent), var(--shadow); }
+.radar-head { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+.radar-title { font-size: 16px; }
+.radar { width: 100%; height: auto; display: block; margin-top: 4px; overflow: visible; }
+.radar-ring { fill: none; stroke: var(--border); stroke-width: 1; }
+.radar-ring-label { font-size: 9px; fill: var(--muted); }
+.radar-spoke { stroke: var(--border); stroke-width: 1; }
+.radar-area { fill: color-mix(in srgb, var(--accent) 22%, transparent); stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.radar-hit { fill: transparent; }
+.radar-point { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.radar-point.current { fill: var(--accent); }
+.radar-label { font-size: 12px; font-weight: 600; fill: var(--text); }
+.radar-years { font-weight: 500; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.radar-item { cursor: default; outline: none; }
+.radar-item:hover .radar-point, .radar-item:focus .radar-point { r: 6; }
+.radar-item:hover .radar-label, .radar-item:focus .radar-label { fill: var(--accent); }
+.radar-more { margin: 4px 6px 0; font-size: 12px; color: var(--muted); }
+.radar-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; margin-top: 6px; font-size: 12px; color: var(--muted); }
+.radar-key { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.key-dot { width: 9px; height: 9px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface); }
+.key-dot.current { background: var(--accent); }
+.key-dot:not(:first-child) { margin-left: 8px; }
+/* List cards (e.g. Core Tools): items with their years beside them. */
+.list-card {
+  margin-top: 20px; padding: 16px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.tool-list {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 24px;
+  list-style: none; padding: 0; margin: 14px 4px 0;
+}
+.tool-list li { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.tool-list .key-dot { margin-left: 0; flex-shrink: 0; }
+.tool-list-name { font-weight: 600; font-size: 14px; }
+.tool-list-years { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.card-note { margin: 12px 4px 0; font-size: 12px; font-style: italic; color: var(--muted); }
+.section-note { margin: 14px 4px 0; font-size: 12px; font-style: italic; color: var(--muted); }
+.radar-hint { display: none; transition: opacity .2s ease; }
+.radar-section.is-scrollable .radar-hint { display: inline; }
+.radar-hint.at-end { opacity: 0; }
+
 .tech-track {
-  position: relative; height: 30px;
+  position: relative; height: 42px;
   border-left: 2px solid var(--text);
   background: linear-gradient(var(--grid), var(--grid)) center / 100% 1px no-repeat;
 }
 .tech-bar {
-  position: absolute; top: 3px; bottom: 3px;
+  /* --slots > 1: the job overlaps another one in this row, so they split the height. */
+  --slot: calc((100% - 6px) / var(--slots, 1));
+  position: absolute; top: calc(3px + var(--lane, 0) * var(--slot)); height: var(--slot);
   display: flex; align-items: center; justify-content: center;
   border-radius: 5px;
   min-width: 6px;
 }
 /* Consecutive periods of the same tool read as one continuous bar. */
-.tech-bar.join-prev { border-top-left-radius: 0; border-bottom-left-radius: 0; }
-.tech-bar.join-next { border-top-right-radius: 0; border-bottom-right-radius: 0; }
-.bar-icon { width: 16px; height: 16px; border-radius: 4px; }
+.tech-bar.sq-tl { border-top-left-radius: 0; }
+.tech-bar.sq-bl { border-bottom-left-radius: 0; }
+.tech-bar.sq-tr { border-top-right-radius: 0; }
+.tech-bar.sq-br { border-bottom-right-radius: 0; }
+.bar-icon { width: 18px; height: 18px; border-radius: 4px; }
+.tech-bar.shared .bar-icon { width: 14px; height: 14px; border-radius: 3px; padding: 0; }
 
 /* ---------- soft skills (trophies) ---------- */
 .trophy-tally { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
 .tally {
   display: flex; align-items: center; gap: 6px;
   padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface);
-  font-size: 13px; font-weight: 600; text-transform: capitalize; font-variant-numeric: tabular-nums;
+  font: inherit; font-size: 13px; font-weight: 600; text-transform: capitalize; font-variant-numeric: tabular-nums;
+  color: var(--text); cursor: pointer; transition: border-color .15s ease, opacity .15s ease, background .15s ease;
 }
-.tally-dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--m1), var(--m2)); }
+.tally:hover { border-color: var(--m2); }
+.tally:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tally[aria-pressed="true"] { border-color: var(--m2); background: color-mix(in srgb, var(--m3) 25%, var(--surface)); }
+.trophy-tally.filtering .tally[aria-pressed="false"] { opacity: .5; }
 
-.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+/* Pagination under the trophy grid */
+.pager { display: flex; justify-content: center; gap: 6px; margin-top: 20px; }
+.pager-btn {
+  min-width: 34px; height: 34px; padding: 0 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.pager-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.pager-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pager-btn[aria-current="page"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pager-btn:disabled { opacity: .4; cursor: default; }
+.tally-dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--m1), var(--m2)); }
+/* In-development chip: same green as the in-development badge. */
+.tally-dev { --m1: #4ade80; --m2: #16a34a; --m3: #86efac; }
+.tally.tally-dev { text-transform: none; }
+
+.skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 .badge {
   display: flex; flex-direction: column; align-items: center; text-align: center;
   padding: 24px 16px 20px;
@@ -280,6 +403,8 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   border: 1px solid color-mix(in srgb, var(--co) 55%, transparent);
 }
 .badge-companies .co-icon { width: 16px; height: 16px; border-radius: 50%; }
+/* Non-job places from "achieved_at" (personal projects, courses): neutral chip, no logo. */
+.badge-companies li.chip-other { padding-left: 10px; border: 1px dashed var(--border); color: var(--muted); }
 /* In development: rarity medal faded, with a ring and a bar showing completion. */
 .badge-dev { --dev: #22c55e; }
 .medal-wrap { position: relative; margin-bottom: 14px; }
@@ -348,8 +473,10 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   .avatar { width: 136px; height: 136px; }
   .links { justify-content: center; }
 
-  .tech-grid { grid-template-columns: 96px 1fr; }
-  .tech-label { flex-direction: column; align-items: flex-start; justify-content: center; gap: 0; padding-right: 8px; }
+  /* Branch rows stack: label, then timeline. */
+  .disc { grid-template-columns: 1fr; row-gap: 8px; }
+  .disc-axis .disc-label { display: none; }
+  .radar-card { flex-basis: min(380px, 88vw); }
   .tech-chart, .timeline { padding: 14px; }
   .y-full { display: none; }
   .y-short { display: inline; }
@@ -359,8 +486,10 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 /* Vertical devices: the experience timeline runs vertically, from the first job (top) to Now (bottom).
    Text stays upright: start date at the top, end date at the bottom, the rest centred in between. */
 @media (max-width: 720px), (orientation: portrait) and (pointer: coarse) {
-  .timeline { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; }
-  .timeline > .axis { order: -1; height: auto; width: 40px; margin: 0; }
+  .xp-scroll { overflow: visible; padding-bottom: 0; }
+  .xp-canvas { width: auto; display: grid; grid-template-columns: auto 1fr; column-gap: 12px; }
+  .xp-canvas > .axis { order: -1; height: auto; width: 40px; margin: 0; }
+  .xp-hint { display: none !important; }
   .timeline .tick { left: auto; right: 0; top: var(--pos); transform: translateY(-50%); }
   .timeline .tick-start { transform: none; }
   .timeline .tick-now { transform: translateY(-100%); }
@@ -368,7 +497,6 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   .timeline .y-short { display: none; }
 
   .xp-track {
-    --lane-w: calc((100% - (var(--lanes) - 1) * 8px) / var(--lanes));
     --xp-min: 140px; /* height the shortest job needs for its content */
     height: calc(var(--span-ratio) * var(--xp-min));
     border: 0; border-top: 2px solid var(--text); border-bottom: 2px solid var(--text);
@@ -377,7 +505,7 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   .xp-lanes { inset: 2px 0; }
   .xp-block {
     top: var(--pos); height: var(--len);
-    left: calc(var(--lane) * (var(--lane-w) + 8px)); width: var(--lane-w);
+    left: calc(var(--lane) * var(--slot)); width: var(--slot);
     grid-template-columns: 1fr;
     grid-template-rows: auto 1fr auto auto auto 1fr auto;
     grid-template-areas: "from" "." "icon" "name" "role" "." "to";
@@ -385,7 +513,8 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   }
   .xp-block:hover, .xp-block:focus-visible { transform: translateX(2px); }
   .xp-date-start, .xp-date-end { justify-self: start; }
-  .xp-company, .xp-role { white-space: normal; }
+  /* Boxes are tall here, so the narrow-box layout isn't needed. */
+  .xp-block { container-type: normal; }
 }
 
 @media (prefers-reduced-motion: reduce) {

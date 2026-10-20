@@ -1,0 +1,88 @@
+{
+  "radar_max_years": 5,
+  "note": "Years are only a count representation of my experience with these technologies. Some come from personal and side projects, so they may not be tied to a specific work at a company.",
+  "groups": [
+    {
+      "name": "Programming Languages",
+      "icon": "💻"
+    },
+    {
+      "name": "AI & Machine Learning",
+      "icon": "🧠"
+    },
+    {
+      "name": "Robotics",
+      "icon": "🤖"
+    },
+    {
+      "name": "Desktop & Web",
+      "icon": "🌐"
+    },
+    {
+      "name": "Core Tools",
+      "icon": "🛠️",
+      "chart": "list"
+    },
+    {
+      "name": "Mobile",
+      "icon": "📱"
+    }
+  ],
+  "branches": [
+    {
+      "name": "AI / ML",
+      "icon": "🧠",
+      "groups": [
+        "AI & Machine Learning"
+      ]
+    },
+    {
+      "name": "Robotics",
+      "icon": "🤖",
+      "groups": [
+        "Robotics"
+      ]
+    },
+    {
+      "name": "Web & Full-Stack",
+      "icon": "🌐",
+      "groups": [
+        "Desktop & Web"
+      ]
+    },
+    {
+      "name": "Mobile",
+      "icon": "📱",
+      "groups": [
+        "Mobile"
+      ]
+    }
+  ],
+  "hidden": [
+    "SQL",
+    "Gazebo",
+    "RViz",
+    "URDF / Xacro"
+  ],
+  "overrides": {
+    "C#": {
+      "years": 2.5
+    },
+    "C++": {
+      "years": 3
+    },
+    "Java": {
+      "years": 3.5
+    },
+    "Linux / Bash": {
+      "years": 8,
+      "current": true
+    },
+    "Docker": {
+      "years": 3
+    },
+    "Natural Language Processing": {
+      "years": 2
+    }
+  }
+}

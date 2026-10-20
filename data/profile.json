@@ -1,13 +1,18 @@
 {
   "name": "Miguel",
-  "surnames": "García Surname2",
-  "job_title": "Software Engineer",
+  "surnames": "García Bohigues",
+  "job_title": "AI & ML Technical Leader",
   "image": "assets/profile.svg",
   "phrase": "Lifestyle: Knowledge-Driven",
   "links": [
-    { "label": "GitHub", "url": "https://github.com/your-username" },
-    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-profile" },
-    { "label": "Email", "url": "mailto:you@example.com" }
+    {
+      "label": "GitHub",
+      "url": "https://github.com/migarbo1"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/miguel-garcia-bohigues"
+    }
   ],
   "sections": {
     "experience": "Experience",

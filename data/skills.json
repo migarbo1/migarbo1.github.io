@@ -1,9 +1,154 @@
 [
-  {"id": 1, "title": "Public Speaker", "description": "Successfully spoke in front of a crowd at 5 different events.", "rarity": "gold", "icon": "🎤"},
-  {"id": 2, "title": "Mentor", "description": "Onboarded and mentored at least 3 junior teammates.", "rarity": "silver", "icon": "🧭"},
-  {"id": 3, "title": "Firefighter", "description": "Led the resolution of a production incident under pressure.", "rarity": "bronze", "icon": "🔥"},
-  {"id": 4, "title": "Bridge Builder", "description": "Coordinated a project across 3+ teams or departments.", "rarity": "silver", "icon": "🤝"},
-  {"id": 5, "title": "Team Lead", "description": "Led a team to deliver a product from idea to production.", "rarity": "platinum", "icon": "🏆"},
-  {"id": 6, "title": "Author", "description": "Published a technical article or talk read by 1,000+ people.", "rarity": "gold", "progress": 60, "icon": "✍️"},
-  {"id": 7, "title": "Open Source Maintainer", "description": "Maintained a public project used by 100+ developers.", "rarity": "platinum", "icon": "🛠️"}
+  {
+    "id": 1,
+    "title": "Published Researcher",
+    "description": "Write and publish a paper in a conference or a journal.",
+    "rarity": "platinum",
+    "icon": "📄"
+  },
+  {
+    "id": 2,
+    "title": "Team Lead",
+    "description": "Lead and organize a multidisciplinary team in their day-to-day work.",
+    "rarity": "gold",
+    "icon": "🏆"
+  },
+  {
+    "id": 3,
+    "title": "Public Speaker",
+    "description": "Speak in front of a crowd and defend your work at 5 different events.",
+    "rarity": "gold",
+    "icon": "🎤"
+  },
+  {
+    "id": 4,
+    "title": "Client Whisperer",
+    "description": "Manage negotiations, presentations, live demos and meetings with end clients.",
+    "rarity": "gold",
+    "icon": "🤝"
+  },
+  {
+    "id": 5,
+    "title": "Talent Scout",
+    "description": "Help grow the company's teams by evaluating candidates in selection processes.",
+    "rarity": "silver",
+    "icon": "🔍"
+  },
+  {
+    "id": 6,
+    "title": "Globetrotter",
+    "description": "Engage in a foreign research team and live abroad.",
+    "rarity": "silver",
+    "icon": "🌍"
+  },
+  {
+    "id": 7,
+    "title": "Multitasker",
+    "description": "Hold two jobs, or a job and a Master's degree, at the same time.",
+    "rarity": "silver",
+    "icon": "🤹"
+  },
+  {
+    "id": 8,
+    "title": "Bob the Builder",
+    "description": "Ship a company project, from technical design to production.",
+    "rarity": "bronze",
+    "icon": "🏗️"
+  },
+  {
+    "id": 9,
+    "title": "Autodidact",
+    "description": "Learn a technology on your own and use it in a real project.",
+    "rarity": "silver",
+    "icon": "📚"
+  },
+  {
+    "id": 10,
+    "title": "Lifelong Learner",
+    "description": "Complete 4 online certificates from relevant universities or companies alongside your degree.",
+    "rarity": "bronze",
+    "icon": "🎓",
+    "achieved_at": [
+      "edX Online Platform"
+    ]
+  },
+  {
+    "id": 11,
+    "title": "Cool Under Pressure",
+    "description": "Manage a critical situation on time against a tight deadline.",
+    "rarity": "silver",
+    "icon": "🧊"
+  },
+  {
+    "id": 12,
+    "title": "Ship Captain",
+    "description": "Keep a project on track while juggling shifting priorities.",
+    "rarity": "bronze",
+    "icon": "🧘"
+  },
+  {
+    "id": 13,
+    "title": "Firefighter",
+    "description": "Diagnose, fix and minimize the impact of a production incident.",
+    "rarity": "silver",
+    "icon": "🧯"
+  },
+  {
+    "id": 15,
+    "title": "Second Language",
+    "description": "Work, present and publish in English in an international team.",
+    "rarity": "gold",
+    "icon": "💬"
+  },
+  {
+    "id": 16,
+    "title": "Polyglot",
+    "description": "Reach a B2 level in Italian.",
+    "rarity": "silver",
+    "progress": 40,
+    "icon": "🗣️"
+  },
+  {
+    "id": 18,
+    "title": "Indie Dev",
+    "description": "Publish a mobile app built entirely on your own.",
+    "rarity": "gold",
+    "progress": 60,
+    "icon": "🧑‍💻"
+  },
+  {
+    "id": 19,
+    "title": "Hidden",
+    "description": "",
+    "rarity": "",
+    "icon": ""
+  },
+  {
+    "id": 19,
+    "title": "Hidden",
+    "description": "",
+    "rarity": "",
+    "icon": ""
+  },
+  {
+    "id": 19,
+    "title": "Hidden",
+    "description": "",
+    "rarity": "",
+    "icon": ""
+  },
+  {
+    "id": 19,
+    "title": "Hidden",
+    "description": "",
+    "rarity": "",
+    "icon": ""
+  },
+  {
+    "id": 19,
+    "title": "Hidden",
+    "description": "",
+    "rarity": "",
+    "icon": ""
+  }
 ]
