@@ -7,6 +7,7 @@ const DATA = {
   skills: 'data/skills.json',
   contributions: 'data/contributions.json',
   expertise: 'data/expertise.json',
+  projects: 'data/projects.json',
 };
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -123,6 +124,9 @@ function gridlines(scale) {
       el('span', { style: { '--pos': `${scale.pct(new Date(y, 0, 1))}%` } })));
 }
 
+/** experience.json entries with "type": "personal" are personal projects, not jobs. */
+const isPersonal = (exp) => exp?.type === 'personal';
+
 function companyIcon(exp, cls = 'co-icon') {
   if (!exp?.company_ico) return null;
   return el('img', { class: cls, src: exp.company_ico, alt: '', loading: 'lazy' });
@@ -139,6 +143,10 @@ function renderProfile(p) {
     el('span', { class: 'surnames' }, p.surnames));
   document.getElementById('job-title').textContent = p.job_title;
   document.getElementById('phrase').textContent = p.phrase ?? '';
+  // Optional "traits" list, shown under the phrase.
+  const traits = document.getElementById('traits');
+  traits.append(...(p.traits ?? []).map((t) => el('li', {}, t)));
+  traits.hidden = !traits.children.length;
   const avatar = document.getElementById('avatar');
   avatar.src = p.image;
   avatar.alt = `Photo of ${fullName}`;
@@ -370,14 +378,15 @@ function renderTech(experience, expertise, scale) {
       tr: after.some((q) => covers(q, top(p))), br: after.some((q) => covers(q, bottom(p))),
     };
     const corners = Object.entries(square).filter(([, on]) => on).map(([c]) => ` sq-${c}`).join('');
+    const personal = isPersonal(exp);
     return el('div', {
-      class: `tech-bar${corners}${slots > 1 ? ' shared' : ''}`,
+      class: `tech-bar${corners}${slots > 1 ? ' shared' : ''}${personal ? ' personal' : ''}`,
       'data-company': exp.company,
       style: {
-        left: `${scale.pct(s)}%`, width: `${scale.pct(e) - scale.pct(s)}%`, background: exp.colour,
+        left: `${scale.pct(s)}%`, width: `${scale.pct(e) - scale.pct(s)}%`, '--co': exp.colour,
         '--lane': lane, '--slots': slots,
       },
-      title: `${name} @ ${exp.company} (${exp.start_date} – ${formatMMYY(exp.end_date)})`,
+      title: `${name} @ ${exp.company}${personal ? ' (personal project)' : ''} (${exp.start_date} – ${formatMMYY(exp.end_date)})`,
     }, companyIcon(exp, 'co-icon bar-icon'));
   });
 
@@ -413,12 +422,19 @@ function renderTech(experience, expertise, scale) {
     return row;
   }).filter(Boolean);
 
+  // Legend: companies first, then personal projects under their own heading (headings only when both exist).
   const legendSeen = new Set();
-  const legend = el('ul', { class: 'legend' }, experience
-    .filter((e) => !legendSeen.has(e.company) && legendSeen.add(e.company))
-    .map((exp) => el('li', {},
-      el('span', { class: 'legend-swatch', style: { background: exp.colour } }, companyIcon(exp)),
-      exp.company)));
+  const entries = experience.filter((e) => !legendSeen.has(e.company) && legendSeen.add(e.company));
+  const legendList = (items) => el('ul', { class: 'legend' }, items.map((exp) => el('li', {},
+    el('span', { class: `legend-swatch${isPersonal(exp) ? ' personal' : ''}`, style: { '--co': exp.colour } }, companyIcon(exp)),
+    exp.company)));
+  const companies = entries.filter((e) => !isPersonal(e));
+  const personalProjects = entries.filter(isPersonal);
+  const legend = personalProjects.length
+    ? el('div', { class: 'legend-groups' },
+      el('div', { class: 'legend-group' }, el('h3', { class: 'legend-title' }, 'Companies'), legendList(companies)),
+      el('div', { class: 'legend-group' }, el('h3', { class: 'legend-title' }, 'Personal projects'), legendList(personalProjects)))
+    : legendList(companies);
 
   root.append(legend, el('div', { class: 'disc-list' }, branchRows,
     el('div', { class: 'disc disc-axis' }, el('div', { class: 'disc-label' }), el('div', { class: 'tech-axis' }, axis(scale)))));
@@ -606,7 +622,8 @@ function renderSkills(skills, experience) {
       el('div', { class: 'badge-achieved' },
         el('p', { class: 'badge-achieved-label' }, 'Achieved at:'),
         el('ul', { class: 'badge-companies' },
-          earned.get(skill.id).map((exp) => el('li', { style: { '--co': exp.colour } }, companyIcon(exp), exp.company)),
+          earned.get(skill.id).map((exp) => el('li', { class: isPersonal(exp) ? 'chip-personal' : null, style: { '--co': exp.colour } },
+            companyIcon(exp), exp.company)),
           extraOf(skill).map((name) => el('li', { class: 'chip-other' }, name))))) };
   });
 
@@ -706,28 +723,98 @@ function renderSkills(skills, experience) {
   render();
 }
 
-function renderContributions(contributions, experience) {
+/** Link text: "owner/repo" for GitHub, the site name (e.g. "code.europa.eu") for anything else. */
+function linkLabel(url) {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, '');
+    if (host === 'github.com') return u.pathname.split('/').filter(Boolean).slice(0, 2).join('/') || host;
+    return host;
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * Card grid shared by Open Source Contributions and Personal Projects.
+ * Items: { title, date, description?, company?, url? (or repo_url), tags? }. A company that matches
+ * experience.json brings its colour and icon; without one, the card shows `label` (e.g. "Personal project").
+ */
+function renderCards(sectionId, items, experience, label, { showStatus = false } = {}) {
   // Nothing to show yet: hide the section and its nav link.
-  if (!contributions.length) {
-    document.getElementById('contributions').hidden = true;
-    document.querySelector('.nav-links a[href="#contributions"]')?.setAttribute('hidden', '');
+  if (!items.length) {
+    document.getElementById(sectionId).hidden = true;
+    document.querySelector(`.nav-links a[href="#${sectionId}"]`)?.setAttribute('hidden', '');
     return;
   }
   const byCompany = new Map(experience.map((e) => [e.company.toLowerCase(), e]));
-  const sorted = [...contributions].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+  // A card takes the colour and icon of its experience.json entry, matched by "company" or, for personal
+  // projects, by its title (e.g. a project card "Cook 'Em All" and a personal entry with that name).
+  const expOf = (c) => byCompany.get(String(c.company ?? c.title).toLowerCase()) ?? null;
 
-  document.getElementById('contributions-grid').append(...sorted.map((c) => {
-    const exp = byCompany.get(String(c.company).toLowerCase());
-    const repo = c.repo_url.replace(/^https?:\/\/(www\.)?github\.com\//, '');
-    return el('article', { class: 'card', style: { '--co': exp?.colour ?? 'var(--accent)' } },
+  // Personal projects show whether they are active or closed: "status" ("active"/"closed") if given,
+  // otherwise the linked entry's end_date, otherwise a "date" of "Now"/"present".
+  const statusOf = (c, exp) => {
+    if (!showStatus) return null;
+    if (c.status === 'active' || c.status === 'closed') return c.status;
+    if (exp) return isOngoing(exp.end_date) ? 'active' : 'closed';
+    if (c.date) return isOngoing(c.date) ? 'active' : 'closed';
+    return null;
+  };
+  const cards = items.map((c) => ({ c, exp: expOf(c) })).map((x) => ({ ...x, status: statusOf(x.c, x.exp) }));
+  // Active first, then newest first.
+  cards.sort((a, b) => (b.status === 'active') - (a.status === 'active') || parseDate(b.c.date) - parseDate(a.c.date));
+
+  document.getElementById(`${sectionId}-grid`).append(...cards.map(({ c, exp, status }) => {
+    const url = c.url ?? c.repo_url;
+    // Active projects linked to an entry say since when; otherwise the card's own date ("Now" shows no date).
+    const since = status === 'active' && exp ? exp.start_date : null;
+    const dateText = since ? `Since ${formatLong(since)}` : c.date && !isOngoing(c.date) ? formatLong(c.date) : null;
+    return el('article', { class: `card${status ? ` card-${status}` : ''}`, style: { '--co': exp?.colour ?? 'var(--accent)' } },
       el('div', { class: 'card-meta' },
-        el('span', { class: 'card-company' }, companyIcon(exp), c.company),
-        el('time', { datetime: parseDate(c.date).toISOString().slice(0, 7) }, formatLong(c.date))),
+        el('span', { class: 'card-company' }, companyIcon(exp), c.company ?? label),
+        el('span', { class: 'card-meta-end' },
+          dateText ? el('time', { datetime: parseDate(since ?? c.date).toISOString().slice(0, 7) }, dateText) : null,
+          status ? el('span', { class: `card-status ${status}` }, status === 'active' ? 'Active' : 'Closed') : null)),
       el('h3', { class: 'card-title' }, c.title),
       c.description ? el('p', { class: 'card-desc' }, c.description) : null,
-      el('a', { class: 'card-link', href: c.repo_url, target: '_blank', rel: 'noopener' },
-        githubIcon(), el('span', {}, repo), el('span', { 'aria-hidden': 'true' }, '→')));
+      c.tags?.length ? el('ul', { class: 'card-tags' }, c.tags.map((t) => el('li', {}, t))) : null,
+      cardLinks([
+        url,
+        // "resource": extra link(s) to videos, Hugging Face, LinkedIn posts...; a URL or a list of URLs.
+        ...[c.resource ?? []].flat(),
+      ].filter(Boolean).map((href) => ({
+        href,
+        icon: /(^|\.)github\.com$/.test(new URL(href, location.href).hostname) ? githubIcon() : linkIcon(),
+        text: resourceLabel(href),
+      }))));
   }));
+}
+
+/** Friendly names for common resource sites; anything else shows its domain. */
+function resourceLabel(url) {
+  const host = linkLabel(url);
+  const known = {
+    'youtube.com': 'YouTube', 'youtu.be': 'YouTube', 'vimeo.com': 'Vimeo',
+    'huggingface.co': 'Hugging Face', 'linkedin.com': 'LinkedIn', 'arxiv.org': 'arXiv', 'medium.com': 'Medium',
+  };
+  if (host.includes('/')) return host; // a GitHub owner/repo
+  return known[host.replace(/^.*\.(?=[^.]+\.[^.]+$)/, '')] ?? host;
+}
+
+/** The links row at the bottom of a card; null when there are none. */
+function cardLinks(links) {
+  const items = links.filter(Boolean);
+  if (!items.length) return null;
+  return el('div', { class: 'card-links' }, items.map(({ href, icon, text }) =>
+    el('a', { class: 'card-link', href, target: '_blank', rel: 'noopener' },
+      icon, el('span', {}, text), el('span', { 'aria-hidden': 'true' }, '→'))));
+}
+
+function linkIcon() {
+  return svgEl('svg', { viewBox: '0 0 16 16', 'aria-hidden': 'true' },
+    svgEl('path', { d: 'M6.5 9.5l3-3M7 4.5l1.2-1.2a2.6 2.6 0 0 1 3.7 3.7L10.7 8.2M9 11.5l-1.2 1.2a2.6 2.6 0 0 1-3.7-3.7L5.3 7.8',
+      fill: 'none', stroke: 'currentColor', 'stroke-width': 1.6, 'stroke-linecap': 'round' }));
 }
 
 function githubIcon() {
@@ -759,14 +846,17 @@ function setupTheme() {
 async function main() {
   setupTheme();
   try {
-    const [profile, experience, skills, contributions, expertise] = await Promise.all(
+    const [profile, experience, skills, contributions, expertise, projects] = await Promise.all(
       Object.values(DATA).map(loadJSON));
-    const scale = buildScale(experience);
+    // Personal projects ("type": "personal") count in Technical Expertise and trophies, but are left out of
+    // the Experience timeline so they can't be mistaken for a second job.
+    const jobs = experience.filter((e) => !isPersonal(e));
     renderProfile(profile);
-    renderExperience(experience, scale);
-    renderTech(experience, expertise, scale);
+    renderExperience(jobs, buildScale(jobs));
+    renderTech(experience, expertise, buildScale(experience));
     renderSkills(skills, experience);
-    renderContributions(contributions, experience);
+    renderCards('contributions', contributions, experience, 'Open source');
+    renderCards('projects', projects, experience, 'Personal project', { showStatus: true });
   } catch (err) {
     console.error(err);
     document.querySelector('main').prepend(el('div', { class: 'load-error' },

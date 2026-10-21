@@ -37,14 +37,14 @@
   {
     "id": 6,
     "title": "Globetrotter",
-    "description": "Engage in a foreign research team and live abroad.",
+    "description": "Join a foreign research team and live abroad.",
     "rarity": "silver",
     "icon": "🌍"
   },
   {
     "id": 7,
     "title": "Multitasker",
-    "description": "Hold two jobs, or a job and a Master's degree, at the same time.",
+    "description": "Finish your Master's degree whilst working at the same time.",
     "rarity": "silver",
     "icon": "🤹"
   },

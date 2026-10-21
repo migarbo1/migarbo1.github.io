@@ -1,0 +1,24 @@
+[
+    {
+        "title": "Master's Thesis",
+        "description": "Integrating Human Behaviour and Cognition into Autonomous Driving Learning Systems.",
+        "date": "09/24",
+        "url": "https://www.linkedin.com/posts/miguel-garcia-bohigues_integrating-human-behaviour-cognition-into-activity-7222534902779400193-5WDE?utm_source=share&utm_medium=member_desktop&rcm=ACoAADYFOZUB6S-xbPs2cSzx-Q1i5zYSQ_eNIiE",
+        "resource": "https://www.youtube.com/watch?v=oIsfclNbrTo",
+        "tags": ["Reinforcement Learning", "TORCS", "PyTorch", "LaTeX"]
+    },
+    {
+        "title": "Write the lyrics",
+        "description": "A GPT-2 fine-tune to generate heavy metal songs.",
+        "date": "03/23",
+        "url": "https://www.linkedin.com/posts/miguel-garcia-bohigues_github-migarbo1write-the-lyrics-repo-activity-7047287731667836928--ucR?utm_source=share&utm_medium=member_desktop&rcm=ACoAADYFOZUB6S-xbPs2cSzx-Q1i5zYSQ_eNIiE",
+        "resource": "https://github.com/migarbo1/write-the-lyrics#write-the-lyrics",
+        "tags": ["Natural Language Processing", "Hugging Face", "PyTorch", "GPT"]
+    },
+    {
+        "title": "Cook 'Em All",
+        "description": "A mobile app in Flutter to manage and discover new recipes, schedule weekly menus and much more.",
+        "date": "Now",
+        "tags": ["Flutter", "Supabase", "PostgreSQL", "S3 storage"]
+    }
+]

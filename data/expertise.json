@@ -1,6 +1,6 @@
 {
   "radar_max_years": 5,
-  "note": "Years are only a count representation of my experience with these technologies. Some come from personal and side projects, so they may not be tied to a specific work at a company.",
+  "note": "Years are a representation of my experience with these technologies. Some come from personal and side projects, so they may not be tied to a specific job at a company.",
   "groups": [
     {
       "name": "Programming Languages",
@@ -44,7 +44,7 @@
       ]
     },
     {
-      "name": "Web & Full-Stack",
+      "name": "Desktop & Web",
       "icon": "🌐",
       "groups": [
         "Desktop & Web"
@@ -83,6 +83,29 @@
     },
     "Natural Language Processing": {
       "years": 2
+    },
+    "Flutter": {
+      "group": "Mobile",
+      "years": 1.5,
+      "current": true
+    },
+    "Supabase": {
+      "group": "Mobile",
+      "years": 1.5,
+      "current": true
+    },
+    "PostgreSQL": {
+      "group": "Mobile",
+      "years": 1.5,
+      "current": true
+    },
+    "Android": {
+      "group": "Mobile",
+      "years": 1.5
+    },
+    "S3 storage": {
+      "group": "Mobile",
+      "years": 1.5
     }
   }
 }

@@ -1,9 +1,14 @@
 {
   "name": "Miguel",
   "surnames": "García Bohigues",
-  "job_title": "AI & ML Technical Leader",
-  "image": "assets/profile.svg",
-  "phrase": "Lifestyle: Knowledge-Driven",
+  "job_title": "AI, ML & Robotics Technical Leader",
+  "image": "assets/profile.jpeg",
+  "phrase": "Turning data into decisions, concepts into products, and colleagues into a team.",
+  "traits": [
+    "Evidence-driven",
+    "People-minded",
+    "Relentlessly curious"
+  ],
   "links": [
     {
       "label": "GitHub",
@@ -15,9 +20,9 @@
     }
   ],
   "sections": {
-    "experience": "Experience",
-    "tech": "Technical Expertise",
-    "skills": "Soft Skills",
+    "experience": "Career",
+    "tech": "Technology Stack",
+    "skills": "Achievements",
     "contributions": "Open Source Contributions"
   }
 }

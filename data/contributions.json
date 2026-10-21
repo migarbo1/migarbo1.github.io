@@ -1,1 +1,30 @@
-[]
+[
+    {
+        "title": "ReNova",
+        "company": "Nunsys",
+        "date": "02/26",
+        "repo_url": "https://code.europa.eu/ldt-toolbox/ai_models/eu_ldt_sustainable_urban_development/-/blob/main/README.md?ref_type=heads#sustainable-urban-development-algorithm",
+        "description": "Optimization algorithm that crosses seven different sources of information and ranks the buildings by refurbishment priority based on a budget and a specific target metric, for example thermal efficiency, energy consumption or CO2 emissions."
+    },
+    {
+        "title": "Enercast",
+        "company": "Nunsys",
+        "date": "02/26",
+        "repo_url": "https://code.europa.eu/ldt-toolbox/ai_models/eu_ldt_sustainable_urban_development/-/blob/main/README.md?ref_type=heads#sustainable-urban-development-algorithm",
+        "description": "Energy consumption prediction tool based on a recurrent neural network model that infers the energy consumption of a given city within Europe for a selected span of days."
+    },
+    {
+        "title": "Vulens",
+        "company": "Nunsys",
+        "date": "02/26",
+        "repo_url": "https://code.europa.eu/ldt-toolbox/ai_models/eu_ldt_sustainable_urban_development/-/blob/main/README.md?ref_type=heads#sustainable-urban-development-algorithm",
+        "description": "Vulnerability assessment tool based on the ISV developed by the city of Zaragoza. As a result, the model creates groups of neighbourhoods sharing the same vulnerabilities or resiliences, allowing stakeholders to properly address social problems in the cities."
+    },
+    {
+        "title": "SPADE-NORMS",
+        "company": "VRAIN-UPV",
+        "date": "01/24",
+        "repo_url": "https://github.com/javipalanca/spade_norms#spade-norms",
+        "description": "Plugin for the well-known and widely used MAS platform SPADE. This plugin brings the possibility of adding normative and value-aware reasoning to the developed MAS. The system has also proved to work with Reinforcement Learning agents."
+    }
+]

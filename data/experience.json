@@ -199,5 +199,28 @@
       12,
       15
     ]
+  },
+  {
+    "type": "personal",
+    "start_date": "07/25",
+    "end_date": "",
+    "company": "Cook 'Em All",
+    "job_title": "Mobile Application Development",
+    "colour": "#3E6740",
+    "company_ico": "assets/companies/cookemall.png",
+    "tech_stack": {
+      "Mobile": [
+        "Flutter",
+        "Supabase",
+        "PostgreSQL",
+        "Android"
+      ],
+      "Core Tools": [
+        "Git"
+      ]
+    },
+    "soft_skills": [
+      9
+    ]
   }
 ]

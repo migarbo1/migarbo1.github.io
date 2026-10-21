@@ -122,13 +122,23 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 }
 .links a:hover { border-color: var(--accent); color: var(--accent); }
 
+/* Headline: what I do, in italics. Not a quote, so no quotation marks. */
 .phrase {
-  text-align: center; margin: 24px auto 0; max-width: 40ch;
-  font-size: clamp(20px, 3vw, 26px); font-style: italic; color: var(--muted);
+  text-align: center; margin: 24px auto 0; max-width: 64ch; text-wrap: balance;
+  font-size: clamp(20px, 3vw, 26px); font-style: italic; color: color-mix(in srgb, var(--text) 75%, var(--muted)); /* between muted and full text: readable, still soft */
 }
-/* Escaped left/right double quotation marks keep the file ASCII-only. */
-.phrase::before, .phrase::after { content: "\201C"; color: var(--accent); font-style: normal; }
-.phrase::after { content: "\201D"; }
+/* Traits under the headline: smaller, muted, separated by dots. */
+.traits {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 0;
+  list-style: none; padding: 0; margin: 12px auto 0;
+  font-size: 15px; color: var(--muted); letter-spacing: .01em;
+}
+.traits li + li::before { content: "\00B7"; margin: 0 12px; color: var(--accent); font-weight: 700; }
+/* Too narrow for one line: stack the traits instead of leaving a dot at the start of a line. */
+@media (max-width: 480px) {
+  .traits { flex-direction: column; align-items: center; gap: 2px; }
+  .traits li + li::before { content: none; }
+}
 
 /* ---------- sections ---------- */
 .section { padding: 56px 0 8px; }
@@ -221,7 +231,17 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 }
 .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; padding: 0; margin: 0 0 20px; font-size: 14px; color: var(--muted); }
 .legend li { display: flex; align-items: center; gap: 8px; }
-.legend-swatch { display: grid; place-items: center; width: 28px; height: 20px; border-radius: 5px; }
+.legend-swatch { display: grid; place-items: center; width: 28px; height: 20px; border-radius: 5px; background: var(--co); }
+/* Personal projects: diagonal stripes in their colour, so they never read as a second job. */
+.tech-bar.personal, .legend-swatch.personal {
+  background: repeating-linear-gradient(135deg, var(--co) 0 6px, color-mix(in srgb, var(--co) 40%, transparent) 6px 12px);
+}
+/* Legend split into "Companies" and "Personal projects" when there are personal projects. */
+.legend-groups { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+.legend-groups .legend { margin-bottom: 0; }
+.legend-title {
+  margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted);
+}
 .legend-swatch .co-icon { width: 14px; height: 14px; border-radius: 3px; }
 
 /* One row per career branch: label | company-coloured timeline. */
@@ -310,6 +330,7 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   background: linear-gradient(var(--grid), var(--grid)) center / 100% 1px no-repeat;
 }
 .tech-bar {
+  background: var(--co);
   /* --slots > 1: the job overlaps another one in this row, so they split the height. */
   --slot: calc((100% - 6px) / var(--slots, 1));
   position: absolute; top: calc(3px + var(--lane, 0) * var(--slot)); height: var(--slot);
@@ -403,6 +424,7 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   border: 1px solid color-mix(in srgb, var(--co) 55%, transparent);
 }
 .badge-companies .co-icon { width: 16px; height: 16px; border-radius: 50%; }
+.badge-companies li.chip-personal { border-style: dashed; }
 /* Non-job places from "achieved_at" (personal projects, courses): neutral chip, no logo. */
 .badge-companies li.chip-other { padding-left: 10px; border: 1px dashed var(--border); color: var(--muted); }
 /* In development: rarity medal faded, with a ring and a bar showing completion. */
@@ -445,13 +467,31 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   transition: transform .15s ease, border-color .15s ease;
 }
 .card:hover { transform: translateY(-3px); }
-.card-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 8px; font-size: 13px; color: var(--muted); }
+.card-company { white-space: nowrap; }
+.card-meta-end { display: flex; align-items: center; gap: 8px; white-space: nowrap; margin-left: auto; }
+/* Cards with a status (personal projects): own line, date on the left and badge on the right. */
+.card-meta-end:has(.card-status) { flex-basis: 100%; justify-content: space-between; margin-left: 0; }
+/* Personal project status */
+.card-status { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.card-status.active { color: #15803d; background: color-mix(in srgb, #22c55e 16%, transparent); }
+.card-status.active::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; }
+.card-status.closed { color: var(--muted); border: 1px solid var(--border); }
+:root[data-theme="dark"] .card-status.active { color: #4ade80; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .card-status.active { color: #4ade80; } }
 .card-company { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text); }
 .card-company .co-icon { width: 18px; height: 18px; }
 .card-title { font-size: 18px; }
 .card-desc { margin: 0; font-size: 14px; color: var(--muted); }
+.card-tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; padding: 0; margin: 0; }
+.card-tags li {
+  padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+}
+/* Links pinned to the bottom of the card: main link, then any "resource" links. */
+.card-links { margin-top: auto; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .card-link {
-  margin-top: auto; display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center; gap: 8px;
   font-size: 14px; font-weight: 600; text-decoration: none; color: var(--text);
   overflow: hidden;
 }
