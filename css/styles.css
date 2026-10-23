@@ -163,8 +163,6 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
 }
 .xp-scroll { overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; padding-bottom: 6px; }
 .xp-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
-.is-scrollable .xp-scroll { cursor: grab; }
-.xp-scroll.dragging { cursor: grabbing; user-select: none; }
 /* Wide enough that the shortest job gets --xp-min-w; never narrower than the card. */
 .xp-canvas { --xp-min-w: 170px; width: max(100%, calc(var(--span-ratio) * var(--xp-min-w))); }
 .xp-hint { display: none; margin: 8px 0 0; font-size: 12px; color: var(--muted); transition: opacity .2s ease; }
@@ -271,8 +269,6 @@ h1, h2, h3 { line-height: 1.2; margin: 0; }
   display: flex; gap: 16px; overflow-x: auto; padding: 4px 2px 10px;
   scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: thin;
 }
-.radar-section.is-scrollable .radar-scroll { cursor: grab; }
-.radar-scroll.dragging { cursor: grabbing; user-select: none; scroll-snap-type: none; }
 .radar-scroll:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
 .radar-card {
   flex: 0 0 380px; scroll-snap-align: start;

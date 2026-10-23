@@ -255,24 +255,6 @@ function renderExperience(experience, scale) {
   requestAnimationFrame(() => { scroller.scrollLeft = scroller.scrollWidth; update(); });
   scroller.addEventListener('scroll', () =>
     hint.classList.toggle('at-start', scroller.scrollLeft < 8), { passive: true });
-  enableDragScroll(scroller);
-}
-
-/** Lets mouse users pan a horizontally scrollable element by dragging it. */
-function enableDragScroll(node) {
-  let startX = 0, startLeft = 0, dragging = false;
-  node.addEventListener('pointerdown', (ev) => {
-    if (ev.pointerType !== 'mouse' || ev.button !== 0 || node.scrollWidth <= node.clientWidth) return;
-    dragging = true; startX = ev.clientX; startLeft = node.scrollLeft;
-    node.setPointerCapture(ev.pointerId);
-    node.classList.add('dragging');
-  });
-  node.addEventListener('pointermove', (ev) => {
-    if (dragging) node.scrollLeft = startLeft - (ev.clientX - startX);
-  });
-  const stop = () => { dragging = false; node.classList.remove('dragging'); };
-  node.addEventListener('pointerup', stop);
-  node.addEventListener('pointercancel', stop);
 }
 
 /** Total time covered by a set of {s, e} spans, merging overlaps so concurrent jobs count once. */
@@ -575,7 +557,6 @@ function renderTech(experience, expertise, scale) {
   };
   new ResizeObserver(update).observe(scroller);
   scroller.addEventListener('scroll', update, { passive: true });
-  enableDragScroll(scroller);
 }
 
 function renderSkills(skills, experience) {
